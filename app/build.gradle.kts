@@ -96,9 +96,10 @@ dependencies {
 
     // Coil
     implementation ("io.coil-kt:coil:1.1.1")
+    implementation("io.coil-kt:coil-compose:2.4.0")
     implementation ("com.google.accompanist:accompanist-coil:0.7.0")
 
+    implementation ("androidx.palette:palette-ktx:1.0.0")
 
- //   implementation ("com.android.support:palette-v7:28.0.0")
 
 }
