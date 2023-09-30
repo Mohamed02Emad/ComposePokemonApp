@@ -1,6 +1,10 @@
 package com.mo.composepokemonapp.data.models.response
 
+import com.google.gson.annotations.SerializedName
+
 data class GenerationVi(
-    var omegaruby-alphasapphire: OmegarubyAlphasapphire,
-    var x-y: XY
+    @SerializedName("omegaruby-alphasapphire")
+    var omegarubyAlphasapphire: OmegarubyAlphasapphire,
+    @SerializedName("x-y")
+    var xy: XY
 )

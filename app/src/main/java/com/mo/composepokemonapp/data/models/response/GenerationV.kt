@@ -1,5 +1,8 @@
 package com.mo.composepokemonapp.data.models.response
 
+import com.google.gson.annotations.SerializedName
+
 data class GenerationV(
-    var black-white: BlackWhite
+    @SerializedName("black-white")
+    var blackWhite: BlackWhite
 )

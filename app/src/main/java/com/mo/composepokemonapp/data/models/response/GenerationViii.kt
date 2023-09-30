@@ -1,5 +1,5 @@
 package com.mo.composepokemonapp.data.models.response
 
 data class GenerationViii(
-    var icons: IconsX
+    var icons: Icons
 )
