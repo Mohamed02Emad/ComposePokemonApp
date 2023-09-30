@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -73,34 +77,22 @@ fun PokemonListScreen(
             ) {
                 //   Toast.makeText(context , it,Toast.LENGTH_SHORT).show()
             }
-            Row {
-                Spacer(modifier = Modifier.width(16.dp))
-                PokemonCard(
-                    navController = navController,
-                    context = context,
-                    pokemon = PokemonListEntry(
-                        "pikachu",
-                        "https://www.freepnglogos.com/uploads/pokemon-png/pikachu-transparent-pokemon-png-11.png",
-                        0
-                    ),
-                    modifier = Modifier
-                        .padding(top = 20.dp)
-                        .weight(0.4f)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                PokemonCard(
-                    navController = navController,
-                    context = context,
-                    pokemon = PokemonListEntry(
-                        "squirtle",
-                        "https://www.freepnglogos.com/uploads/pokemon-png/squirtle-pokemon-png-megbeth-17.png",
-                        0
-                    ),
-                    modifier = Modifier
-                        .padding(top = 20.dp)
-                        .weight(0.4f)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
+
+
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier
+                    .padding(top = 20.dp, bottom = 12.dp)
+                    .padding(horizontal = 16.dp)
+                    .padding( bottom = 12.dp)
+                    .fillMaxWidth()
+
+            ) {
+                items(items = getFakePokemons()) {
+                    PokemonCard(pokemon = it, navController = navController, context = context)
+                }
             }
         }
     }
@@ -124,6 +116,7 @@ fun PokemonCard(
 
     Box(
         modifier = modifier
+            .padding(bottom = 12.dp)
             .shadow(4.dp, RoundedCornerShape(10.dp))
             .clip(RoundedCornerShape(10.dp))
             .aspectRatio(1f)
@@ -170,10 +163,73 @@ fun PokemonCard(
                 color = Color.Black,
                 fontSize = 14.sp,
                 fontFamily = RobotoCondensed,
-                modifier = Modifier.padding(top=4.dp)
+                modifier = Modifier.padding(top = 4.dp)
             )
         }
 
     }
 
+}
+
+@Composable
+fun RowPokemonCard(
+    pokemon: PokemonListEntry,
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    context: Context,
+    //   viewModel: PokemonListViewModel = hiltViewModel()
+) {
+    Row {
+        Spacer(modifier = Modifier.width(16.dp))
+        PokemonCard(
+            navController = navController,
+            context = context,
+            pokemon = PokemonListEntry(
+                "pikachu",
+                "https://www.freepnglogos.com/uploads/pokemon-png/pikachu-transparent-pokemon-png-11.png",
+                0
+            ),
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .weight(0.4f)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        PokemonCard(
+            navController = navController,
+            context = context,
+            pokemon = PokemonListEntry(
+                "squirtle",
+                "https://www.freepnglogos.com/uploads/pokemon-png/squirtle-pokemon-png-megbeth-17.png",
+                0
+            ),
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .weight(0.4f)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+    }
+}
+
+private fun getFakePokemons(): MutableList<PokemonListEntry> {
+    return mutableListOf<PokemonListEntry>(
+        PokemonListEntry(
+            "squirtle",
+            "https://www.freepnglogos.com/uploads/pokemon-png/squirtle-pokemon-png-megbeth-17.png",
+            0
+        ),
+        PokemonListEntry(
+            "pikachu",
+            "https://www.freepnglogos.com/uploads/pokemon-png/pikachu-transparent-pokemon-png-11.png",
+            0
+        ),
+        PokemonListEntry(
+            "pikachu",
+            "https://www.freepnglogos.com/uploads/pokemon-png/pikachu-transparent-pokemon-png-11.png",
+            0
+        ), PokemonListEntry(
+            "squirtle",
+            "https://www.freepnglogos.com/uploads/pokemon-png/squirtle-pokemon-png-megbeth-17.png",
+            0
+        )
+    )
 }
