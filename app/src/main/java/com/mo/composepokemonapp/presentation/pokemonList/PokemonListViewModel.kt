@@ -1,7 +1,6 @@
 package com.mo.composepokemonapp.presentation.pokemonList
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mo.composepokemonapp.data.api.PAGE_SIZE
@@ -23,16 +22,18 @@ class PokemonListViewModel @Inject constructor(
     var pokemonsList = mutableStateOf<List<PokemonListEntry>>(listOf())
     var endReached = mutableStateOf(false)
     var isLoading = mutableStateOf(false)
+    var searchQuery = mutableStateOf("")
     var loadError = mutableStateOf("")
 
 
     init {
         loadPokemons()
     }
+
     fun loadPokemons() {
         viewModelScope.launch {
             val response = repository.getPokemonList(currentPage * PAGE_SIZE, PAGE_SIZE)
-            when(response){
+            when (response) {
                 is ResponseState.Loading,
                 is ResponseState.Empty,
                 is ResponseState.NotAuthorized ,
@@ -51,7 +52,7 @@ class PokemonListViewModel @Inject constructor(
                             entry.url.takeLastWhile { it.isDigit() }
                         }
                         val url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${number}.png"
-                        PokemonListEntry(entry.name.uppercase(Locale.ROOT), url, number.toInt())
+                        PokemonListEntry(entry.name.replaceFirstChar { it.uppercase() }, url, number.toInt())
                     }
                     currentPage++
                     loadError.value = ""
@@ -60,6 +61,16 @@ class PokemonListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun getDisplayList(searchQuery: String, pokemonList: List<PokemonListEntry>) =
+        if (searchQuery.isEmpty()) pokemonList
+        else pokemonList.filter {
+            it.name.contains(searchQuery.trim() , ignoreCase = true) || it.number.toString() == searchQuery.trim()
+        }
+
+    fun searchFor(query: String) {
+       searchQuery.value = query
     }
 
 

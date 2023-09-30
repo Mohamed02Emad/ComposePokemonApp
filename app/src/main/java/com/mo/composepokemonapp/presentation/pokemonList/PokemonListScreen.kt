@@ -75,23 +75,26 @@ fun PokemonListScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                //   Toast.makeText(context , it,Toast.LENGTH_SHORT).show()
+                viewModel.searchFor(it)
             }
 
-            PokemonesList(navController = navController, viewModel = viewModel)
+            PokemonsList(navController = navController, viewModel = viewModel)
         }
     }
 }
 
 
 @Composable
-fun PokemonesList(
+fun PokemonsList(
     navController: NavController, viewModel: PokemonListViewModel
 ) {
     val pokemonList by remember { viewModel.pokemonsList }
     val endReached by remember { viewModel.endReached }
     val loadError by remember { viewModel.loadError }
     val isLoading by remember { viewModel.isLoading }
+    val searchQuery by remember { viewModel.searchQuery }
+
+    val pokeList = viewModel.getDisplayList(searchQuery , pokemonList)
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -102,8 +105,8 @@ fun PokemonesList(
             .fillMaxWidth()
 
     ) {
-        items(items = pokemonList) {
-            if (it == pokemonList.last() && endReached.not()) {
+        items(items = pokeList) {
+            if (it == pokemonList.last() && endReached.not() && isLoading.not() && searchQuery.isEmpty()) {
                 viewModel.loadPokemons()
             }
             PokemonCard(pokemon = it, navController = navController)
