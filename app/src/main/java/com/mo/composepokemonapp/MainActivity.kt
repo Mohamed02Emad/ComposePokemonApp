@@ -3,19 +3,16 @@ package com.mo.composepokemonapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mo.composepokemonapp.presentation.pokemonList.PokemonListScreen
+import com.mo.composepokemonapp.presentation.pokemonList.PokemonListViewModel
 import com.mo.composepokemonapp.ui.theme.ComposePokemonAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,7 +28,11 @@ class MainActivity : ComponentActivity() {
                     startDestination = "pokemon_list_screen"
                 ) {
                     composable("pokemon_list_screen") {
-                     PokemonListScreen(navController = navController)
+
+
+                        val viewModel: PokemonListViewModel =
+                            ViewModelProvider(this@MainActivity).get(PokemonListViewModel::class.java)
+                        PokemonListScreen(navController = navController , viewModel)
                     }
                     composable(
                         "pokemon_details_screen/{dominateColor}/{pokemonName}",

@@ -1,13 +1,11 @@
 package com.mo.composepokemonapp.presentation.pokemonList
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,11 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -52,9 +51,10 @@ import com.mo.composepokemonapp.utils.composables.NoIconSearchBar
 
 @Composable
 fun PokemonListScreen(
-    navController: NavController
+    navController: NavController, viewModel: PokemonListViewModel
 ) {
     val context = LocalContext.current
+
     Surface(
         color = MaterialTheme.colors.background,
         modifier = Modifier.fillMaxSize()
@@ -78,24 +78,52 @@ fun PokemonListScreen(
                 //   Toast.makeText(context , it,Toast.LENGTH_SHORT).show()
             }
 
+            PokemonesList(navController = navController, viewModel = viewModel)
+        }
+    }
+}
 
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .padding(top = 20.dp, bottom = 12.dp)
-                    .padding(horizontal = 16.dp)
-                    .padding( bottom = 12.dp)
-                    .fillMaxWidth()
+@Composable
+fun PokemonesList(
+    navController: NavController, viewModel: PokemonListViewModel
+) {
+    val pokemonList by remember { viewModel.pokemonsList }
+    val endReached by remember { viewModel.endReached }
+    val loadError by remember { viewModel.loadError }
+    val isLoading by remember { viewModel.isLoading }
 
-            ) {
-                items(items = getFakePokemons()) {
-                    PokemonCard(pokemon = it, navController = navController, context = context)
-                }
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier
+            .padding(top = 20.dp)
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+
+    ) {
+        items(items = pokemonList) {
+            if (it == pokemonList.last() && endReached.not()) {
+                viewModel.loadPokemons()
+            }
+            PokemonCard(pokemon = it, navController = navController)
+        }
+    }
+
+    Box(
+        contentAlignment = Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if(isLoading) {
+            CircularProgressIndicator(color = MaterialTheme.colors.primary)
+        }
+        if(loadError.isNotEmpty()) {
+            RetrySection(error = loadError) {
+                viewModel.loadPokemons()
             }
         }
     }
+
 }
 
 
@@ -104,8 +132,6 @@ fun PokemonCard(
     pokemon: PokemonListEntry,
     navController: NavController,
     modifier: Modifier = Modifier,
-    context: Context,
-    //   viewModel: PokemonListViewModel = hiltViewModel()
 ) {
 
     val defaultDominantColor = MaterialTheme.colors.surface
@@ -114,27 +140,24 @@ fun PokemonCard(
     }
 
 
-    Box(
-        modifier = modifier
-            .padding(bottom = 12.dp)
-            .shadow(4.dp, RoundedCornerShape(10.dp))
-            .clip(RoundedCornerShape(10.dp))
-            .aspectRatio(1f)
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        dominantColor,
-                        defaultDominantColor
-                    )
+    Box(modifier = modifier
+        .padding(bottom = 12.dp)
+        .shadow(4.dp, RoundedCornerShape(10.dp))
+        .clip(RoundedCornerShape(10.dp))
+        .aspectRatio(1f)
+        .background(
+            Brush.verticalGradient(
+                listOf(
+                    dominantColor, defaultDominantColor
                 )
             )
-            .clickable {
-                navController.navigate(
-                    "pokemon_details_screen/${dominantColor.toArgb()}/${pokemon.name}"
-                )
-            }
-            .padding(4.dp),
-        contentAlignment = Center
+        )
+        .clickable {
+            navController.navigate(
+                "pokemon_details_screen/${dominantColor.toArgb()}/${pokemon.name}"
+            )
+        }
+        .padding(4.dp), contentAlignment = Center
 
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -172,64 +195,18 @@ fun PokemonCard(
 }
 
 @Composable
-fun RowPokemonCard(
-    pokemon: PokemonListEntry,
-    navController: NavController,
-    modifier: Modifier = Modifier,
-    context: Context,
-    //   viewModel: PokemonListViewModel = hiltViewModel()
+fun RetrySection(
+    error: String,
+    onRetry: () -> Unit
 ) {
-    Row {
-        Spacer(modifier = Modifier.width(16.dp))
-        PokemonCard(
-            navController = navController,
-            context = context,
-            pokemon = PokemonListEntry(
-                "pikachu",
-                "https://www.freepnglogos.com/uploads/pokemon-png/pikachu-transparent-pokemon-png-11.png",
-                0
-            ),
-            modifier = Modifier
-                .padding(top = 20.dp)
-                .weight(0.4f)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        PokemonCard(
-            navController = navController,
-            context = context,
-            pokemon = PokemonListEntry(
-                "squirtle",
-                "https://www.freepnglogos.com/uploads/pokemon-png/squirtle-pokemon-png-megbeth-17.png",
-                0
-            ),
-            modifier = Modifier
-                .padding(top = 20.dp)
-                .weight(0.4f)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
+    Column {
+        Text(error, color = Color.Red, fontSize = 18.sp)
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = { onRetry() },
+            modifier = Modifier.align(CenterHorizontally)
+        ) {
+            Text(text = "Retry")
+        }
     }
-}
-
-private fun getFakePokemons(): MutableList<PokemonListEntry> {
-    return mutableListOf<PokemonListEntry>(
-        PokemonListEntry(
-            "squirtle",
-            "https://www.freepnglogos.com/uploads/pokemon-png/squirtle-pokemon-png-megbeth-17.png",
-            0
-        ),
-        PokemonListEntry(
-            "pikachu",
-            "https://www.freepnglogos.com/uploads/pokemon-png/pikachu-transparent-pokemon-png-11.png",
-            0
-        ),
-        PokemonListEntry(
-            "pikachu",
-            "https://www.freepnglogos.com/uploads/pokemon-png/pikachu-transparent-pokemon-png-11.png",
-            0
-        ), PokemonListEntry(
-            "squirtle",
-            "https://www.freepnglogos.com/uploads/pokemon-png/squirtle-pokemon-png-megbeth-17.png",
-            0
-        )
-    )
 }
