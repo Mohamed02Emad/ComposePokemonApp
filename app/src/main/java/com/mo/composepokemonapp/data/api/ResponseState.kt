@@ -88,6 +88,6 @@ private fun parseErrorMessage(responseBody: String?): String {
         val message = json.getString("message")
         message
     } catch (e: Exception) {
-        "General Error" // Return a default message if parsing fails
+        "General Error"
     }
 }

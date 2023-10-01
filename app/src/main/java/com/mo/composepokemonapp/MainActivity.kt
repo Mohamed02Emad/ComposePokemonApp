@@ -11,6 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.mo.composepokemonapp.presentation.pokemonDetails.PokemonDetailScreen
+import com.mo.composepokemonapp.presentation.pokemonDetails.PokemonDetailsViewModel
 import com.mo.composepokemonapp.presentation.pokemonList.PokemonListScreen
 import com.mo.composepokemonapp.presentation.pokemonList.PokemonListViewModel
 import com.mo.composepokemonapp.ui.theme.ComposePokemonAppTheme
@@ -21,6 +23,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val pokemonListViewModel: PokemonListViewModel = ViewModelProvider(this@MainActivity)[PokemonListViewModel::class.java]
+            val pokemonDetailsViewModel: PokemonDetailsViewModel = ViewModelProvider(this@MainActivity)[PokemonDetailsViewModel::class.java]
+
             ComposePokemonAppTheme {
                 val navController = rememberNavController()
                 NavHost(
@@ -28,11 +33,7 @@ class MainActivity : ComponentActivity() {
                     startDestination = "pokemon_list_screen"
                 ) {
                     composable("pokemon_list_screen") {
-
-
-                        val viewModel: PokemonListViewModel =
-                            ViewModelProvider(this@MainActivity).get(PokemonListViewModel::class.java)
-                        PokemonListScreen(navController = navController , viewModel)
+                        PokemonListScreen(navController = navController , pokemonListViewModel)
                     }
                     composable(
                         "pokemon_details_screen/{dominateColor}/{pokemonName}",
@@ -40,7 +41,6 @@ class MainActivity : ComponentActivity() {
                             navArgument("dominateColor") {
                                 type = NavType.IntType
                             },
-
                             navArgument("pokemonName") {
                                 type = NavType.StringType
                             },
@@ -54,6 +54,13 @@ class MainActivity : ComponentActivity() {
                            val name = it.arguments?.getString("pokemonName")
                            name ?: "Unknown"
                        }
+
+                        PokemonDetailScreen(
+                            dominantColor = dominateColor,
+                            pokemonName = pokemonName,
+                            navController = navController,
+                            viewModel = pokemonDetailsViewModel
+                        )
 
                     }
                 }

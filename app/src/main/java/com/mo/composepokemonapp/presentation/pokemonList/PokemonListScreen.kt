@@ -137,6 +137,7 @@ fun PokemonCard(
     modifier: Modifier = Modifier,
 ) {
 
+//    val defaultDominantColor = Color.White
     val defaultDominantColor = MaterialTheme.colors.surface
     var dominantColor by remember {
         mutableStateOf(defaultDominantColor)
@@ -186,7 +187,7 @@ fun PokemonCard(
 
             Text(
                 text = pokemon.name,
-                color = Color.Black,
+                color = MaterialTheme.colors.onSecondary,
                 fontSize = 14.sp,
                 fontFamily = RobotoCondensed,
                 modifier = Modifier.padding(top = 4.dp)

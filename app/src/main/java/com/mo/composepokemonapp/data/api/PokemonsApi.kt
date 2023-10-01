@@ -6,6 +6,7 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface PokemonsApi  {
     
@@ -17,9 +18,8 @@ interface PokemonsApi  {
          offset: Int,
     ): Response<PokemonsList>
 
-    @GET("$GET_A_POKEMON/{name}")
+    @GET
     suspend fun getPokemonByName(
-        @Path("name")
-        pokemonName: String,
+        @Url url : String,
     ): Response<Pokemon>
 }

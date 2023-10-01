@@ -3,6 +3,7 @@ package com.mo.composepokemonapp.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val LightBlue = Color(0xFFBAC7FF)
+val DarkBlue = Color(0xFF191B27)
 val lightGrey = Color(0xFFAAAAAA)
 
 val HPColor = Color(0xFFF5FF00)
