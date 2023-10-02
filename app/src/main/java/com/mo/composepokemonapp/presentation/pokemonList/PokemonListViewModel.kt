@@ -7,6 +7,7 @@ import com.mo.composepokemonapp.data.api.PAGE_SIZE
 import com.mo.composepokemonapp.data.api.ResponseState
 import com.mo.composepokemonapp.data.models.PokemonListEntry
 import com.mo.composepokemonapp.data.repository.PokemonRepository
+import com.mo.composepokemonapp.utils.capitalizeFirst
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -52,7 +53,7 @@ class PokemonListViewModel @Inject constructor(
                             entry.url.takeLastWhile { it.isDigit() }
                         }
                         val url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${number}.png"
-                        PokemonListEntry(entry.name.replaceFirstChar { it.uppercase() }, url, number.toInt())
+                        PokemonListEntry(entry.name.capitalizeFirst(), url, number.toInt())
                     }
                     currentPage++
                     loadError.value = ""

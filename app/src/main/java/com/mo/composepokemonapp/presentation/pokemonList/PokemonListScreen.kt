@@ -27,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -78,14 +77,14 @@ fun PokemonListScreen(
                 viewModel.searchFor(it)
             }
 
-            PokemonsList(navController = navController, viewModel = viewModel)
+            PokemonList(navController = navController, viewModel = viewModel)
         }
     }
 }
 
 
 @Composable
-fun PokemonsList(
+fun PokemonList(
     navController: NavController, viewModel: PokemonListViewModel
 ) {
     val pokemonList by remember { viewModel.pokemonsList }
@@ -164,7 +163,7 @@ fun PokemonCard(
         .padding(4.dp), contentAlignment = Center
 
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(horizontalAlignment =CenterHorizontally) {
 
             AsyncImage(
                 model = pokemon.imageUrl,
@@ -177,8 +176,8 @@ fun PokemonCard(
                         is AsyncImagePainter.State.Loading -> {}
                         is AsyncImagePainter.State.Success -> {
                             val painter = it.result.drawable
-                            calculateDominantColor(painter) {
-                                dominantColor = it
+                            calculateDominantColor(painter) {color->
+                                dominantColor = color
                             }
                         }
                     }
