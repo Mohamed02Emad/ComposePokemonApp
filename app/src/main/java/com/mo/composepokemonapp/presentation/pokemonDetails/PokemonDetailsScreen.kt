@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.mo.composepokemonapp.R
 import com.mo.composepokemonapp.data.api.ResponseState
 import com.mo.composepokemonapp.data.models.response.Pokemon
@@ -65,7 +67,7 @@ fun PokemonDetailScreen(
     dominantColor: Color,
     pokemonName: String,
     navController: NavController,
-    topPadding: Dp = 20.dp,
+    topPadding: Dp = 70.dp,
     pokemonImageSize: Dp = 200.dp,
     viewModel: PokemonDetailsViewModel
 ) {
@@ -120,16 +122,16 @@ fun PokemonDetailScreen(
     Box(
         contentAlignment = Alignment.TopCenter,
         modifier = Modifier
-            .padding(top = topPadding)
+            .padding(top = 60.dp)
             .fillMaxSize()
+
     ) {
         if (pokemonInfo is ResponseState.Success) {
             pokemonInfo.data?.sprites?.let {
                 AsyncImage(
                     model = it.front_default,
                     contentDescription = null,
-                    modifier = Modifier.size(pokemonImageSize),
-                    contentScale = ContentScale.Crop
+                    modifier = Modifier.size(pokemonImageSize)
                 )
             }
         }
@@ -151,7 +153,7 @@ fun PokemonDetailStateWrapper(
                 pokemonInfo.data!!,
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .padding(bottom = 20.dp, top = topPadding + pokemonImageSize / 2f)
+                    .padding(bottom = 40.dp, top = topPadding + pokemonImageSize / 2f)
                     .fillMaxSize()
                     .shadow(4.dp, RoundedCornerShape(12.dp))
                     .clip(RoundedCornerShape(12.dp))
@@ -159,7 +161,6 @@ fun PokemonDetailStateWrapper(
                 pokemonImageSize = pokemonImageSize
             )
         }
-
         is ResponseState.NetworkError,
         is ResponseState.NotAuthorized,
         is ResponseState.UnKnownError,
@@ -170,14 +171,12 @@ fun PokemonDetailStateWrapper(
                 modifier = modifier
             )
         }
-
         is ResponseState.Loading -> {
             CircularProgressIndicator(
                 color = MaterialTheme.colors.primary,
                 modifier = loadingModifier
             )
         }
-
         is ResponseState.Empty -> {}
     }
 }
@@ -193,7 +192,7 @@ fun PokemonInfo(
         Column(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp, top = pokemonImageSize / 2f)
+                .padding(bottom = 16.dp, top = pokemonImageSize / 2f - 10.dp)
                 .fillMaxSize()
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -218,7 +217,6 @@ fun PokemonBasicStates(
     val maxBaseStat = remember {
         pokemon.stats.maxOf { it.base_stat }
     }
-
     Column(
         modifier = Modifier
             .padding(top = 12.dp)
@@ -238,9 +236,9 @@ fun PokemonBasicStates(
               stateValue = state.base_stat,
               stateMaxValue = maxBaseStat,
               stateColor = parseStatToColor(state),
-              animDelay = i * 50,
-              animDuration = 1000,
-              height = 35.dp
+              animDelay = i * 30,
+              animDuration = 650,
+              height = 28.dp
           )
         }
     }
@@ -262,6 +260,7 @@ fun PokemonDetailTopSection(
                     )
                 )
             )
+            .padding(top = 30.dp)
     ) {
         Icon(
             imageVector = Icons.Default.ArrowBack,
@@ -321,7 +320,7 @@ fun PokemonPersonalInfo(pokemon: Pokemon) {
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
             .padding(top = 10.dp)
-            .height(80.dp)
+            .height(70.dp)
             .fillMaxWidth()
     ) {
         DetailCard(
@@ -356,7 +355,7 @@ fun DetailCard(
             painter = icon,
             contentDescription = null,
             tint = MaterialTheme.colors.onSurface,
-            modifier = Modifier.size(35.dp)
+            modifier = Modifier.size(25.dp)
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
