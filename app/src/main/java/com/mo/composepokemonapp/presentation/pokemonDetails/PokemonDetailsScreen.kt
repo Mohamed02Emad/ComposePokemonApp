@@ -1,7 +1,10 @@
 package com.mo.composepokemonapp.presentation.pokemonDetails
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,8 +30,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +55,8 @@ import com.mo.composepokemonapp.R
 import com.mo.composepokemonapp.data.api.ResponseState
 import com.mo.composepokemonapp.data.models.response.Pokemon
 import com.mo.composepokemonapp.utils.capitalizeFirst
+import com.mo.composepokemonapp.utils.parseStatToAbbr
+import com.mo.composepokemonapp.utils.parseStatToColor
 import com.mo.composepokemonapp.utils.parseTypeToColor
 import kotlin.math.roundToInt
 
@@ -197,6 +206,42 @@ fun PokemonInfo(
             )
             ElementsSection(pokemon)
             PokemonPersonalInfo(pokemon)
+            PokemonBasicStates(pokemon)
+        }
+    }
+}
+
+@Composable
+fun PokemonBasicStates(
+    pokemon: Pokemon
+) {
+    val maxBaseStat = remember {
+        pokemon.stats.maxOf { it.base_stat }
+    }
+
+    Column(
+        modifier = Modifier
+            .padding(top = 12.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "Base States",
+            color = MaterialTheme.colors.onSecondary,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold
+        )
+        for (i in 0 until  pokemon.stats.size) {
+            val state = pokemon.stats[i]
+          Spacer(modifier = Modifier.height(8.dp))
+          StateBar(
+              stateName = parseStatToAbbr(state),
+              stateValue = state.base_stat,
+              stateMaxValue = maxBaseStat,
+              stateColor = parseStatToColor(state),
+              animDelay = i * 50,
+              animDuration = 1000,
+              height = 35.dp
+          )
         }
     }
 }
@@ -320,4 +365,67 @@ fun DetailCard(
         )
 
     }
+}
+
+@Composable
+fun StateBar(
+    stateName: String,
+    stateValue: Int,
+    stateMaxValue: Int,
+    stateColor : Color,
+    height : Dp = 28.dp ,
+    animDuration : Int = 1000,
+    animDelay : Int = 0
+) {
+    var animationPlayed by remember {
+        mutableStateOf(false)
+    }
+    val curPercent = animateFloatAsState(
+        targetValue = if(animationPlayed) {
+            stateValue / stateMaxValue.toFloat()
+        } else 0f,
+        animationSpec = tween(
+            animDuration,
+            animDelay
+        ), label = ""
+    )
+
+    LaunchedEffect(key1 = true) {
+        animationPlayed = true
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height)
+            .clip(CircleShape)
+            .background(
+                if (isSystemInDarkTheme()) {
+                    Color(0xFF505050)
+                } else {
+                    Color.LightGray
+                }
+            )
+    ){
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(curPercent.value)
+                .clip(CircleShape)
+                .background(stateColor)
+                .padding(horizontal = 8.dp)
+        ){
+            Text(
+                text = stateName,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = (curPercent.value * stateMaxValue).toInt().toString(),
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+
 }
